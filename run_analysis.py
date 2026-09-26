@@ -84,6 +84,49 @@ def funnel(dimension, sql_expr, where=""):
     return out
 
 
+def gap_by(dim_sql, label, min_carted=400):
+    """The new-vs-returning checkout gap, cut by another dimension.
+
+    A single headline number hides how much the gap moves across the data.
+    It is widest in the Black Friday / Cyber Monday month and on organic
+    traffic, and narrowest in the post-holiday lull.
+    """
+    session_number = """(SELECT value.int_value FROM UNNEST(event_params)
+                         WHERE key='ga_session_number')"""
+    rows = run(f"""
+        WITH ev AS (
+          SELECT {SESSION_ID} sid, {dim_sql} dim,
+                 IF({session_number} > 1,'returning','new') vis,
+                 event_name, event_timestamp
+          FROM {TABLE}
+          WHERE _TABLE_SUFFIX BETWEEN '{WINDOW[0]}' AND '{WINDOW[1]}'
+        ),
+        f AS (
+          SELECT sid, MAX(dim) dim, MAX(vis) vis,
+            MIN(IF(event_name='add_to_cart',    event_timestamp, NULL)) t_cart,
+            MIN(IF(event_name='begin_checkout', event_timestamp, NULL)) t_co
+          FROM ev GROUP BY sid
+        )
+        SELECT dim, vis, COUNTIF(t_cart IS NOT NULL) carted,
+          ROUND(100*SAFE_DIVIDE(COUNTIF(t_co>t_cart),COUNTIF(t_cart IS NOT NULL)),2) c2k
+        FROM f GROUP BY dim, vis
+        HAVING COUNTIF(t_cart IS NOT NULL) > {min_carted}
+        ORDER BY dim, vis
+    """)
+    print(f"\n{label}")
+    out = {}
+    for d in sorted({str(r.dim) for r in rows}):
+        pair = [r for r in rows if str(r.dim) == d]
+        if len(pair) != 2:
+            continue
+        new = next(x for x in pair if x.vis == "new")
+        ret = next(x for x in pair if x.vis == "returning")
+        gap = round(ret.c2k - new.c2k, 2)
+        out[d] = gap
+        print(f"  {d:<16} new {new.c2k:>6}%   returning {ret.c2k:>6}%   gap {gap:>6.2f}pp")
+    return out
+
+
 def order_values():
     rows = run(f"""
         SELECT ecommerce.purchase_revenue_in_usd v
@@ -147,6 +190,9 @@ def main():
     print(f"  device       {dev_gap:5.2f}pp   <- essentially none")
     print(f"  visitor type {vis_gap:5.2f}pp   <- this is the real one")
 
+    by_month = gap_by("SUBSTR(event_date,1,6)", "GAP BY MONTH")
+    by_channel = gap_by("traffic_source.medium", "GAP BY CHANNEL")
+
     values = order_values()
     sims = monte_carlo(by_visitor["new"], by_visitor["returning"], values)
     p10, p50, p90 = np.percentile(sims, [10, 50, 90])
@@ -160,6 +206,7 @@ def main():
     results = dict(
         users=s["users"], events=s["events"], countries=s["countries"],
         device_gap_pp=round(dev_gap, 2), visitor_gap_pp=round(vis_gap, 2),
+        visitor_gap_by_month=by_month, visitor_gap_by_channel=by_channel,
         new=by_visitor["new"], returning=by_visitor["returning"],
         orders=len(values), total_revenue=round(float(values.sum())),
         aov=round(float(values.mean()), 2),

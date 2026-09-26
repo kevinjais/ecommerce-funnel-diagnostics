@@ -4,6 +4,16 @@
   "countries": 109,
   "device_gap_pp": 0.89,
   "visitor_gap_pp": 12.39,
+  "visitor_gap_by_month": {
+    "202011": 13.75,
+    "202012": 12.85,
+    "202101": 11.66
+  },
+  "visitor_gap_by_channel": {
+    "(none)": 11.88,
+    "organic": 14.31,
+    "referral": 11.89
+  },
   "new": {
     "carted": 8853,
     "checkout": 2634,
@@ -19,8 +29,8 @@
   "orders": 5242,
   "total_revenue": 362165,
   "aov": 69.09,
-  "recoverable_median": 54202,
-  "recoverable_p10": 14063,
-  "recoverable_p90": 181345,
+  "recoverable_median": 53850,
+  "recoverable_p10": 14032,
+  "recoverable_p90": 182597,
   "n_simulations": 25000
 }

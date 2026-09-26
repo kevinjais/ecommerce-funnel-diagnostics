@@ -36,6 +36,23 @@ sessions ----21%----> viewed item ----17%----> added to cart ----33%----> purcha
 Over 90% of sessions that begin checkout complete it. The money is lost at discovery
 and at first-visit trust, not at the payment step.
 
+## How stable is the gap?
+
+A single headline number hides how much it moves. Cut two ways:
+
+| month | gap | | channel | gap |
+|---|---|---|---|---|
+| Nov 2020 (Black Friday / Cyber Monday) | **13.75pp** | | organic | **14.31pp** |
+| Dec 2020 | 12.85pp | | referral | 11.89pp |
+| Jan 2021 | 11.66pp | | direct | 11.88pp |
+
+**The gap is widest exactly when it costs most** — peak shopping month, and the
+largest acquisition channel. It narrows to 11.66pp in the post-holiday lull, when
+the traffic mix shifts back toward people who already know the store.
+
+That pattern is itself the argument: the store is at its worst with first-time
+visitors precisely when it has the most of them.
+
 ## What the gap is worth
 
 `$85,916` mean, `$54,202` median, **80% interval `$14,063` – `$181,345`** per quarter.
