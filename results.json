@@ -1,0 +1,26 @@
+{
+  "users": 270154,
+  "events": 4295584,
+  "countries": 109,
+  "device_gap_pp": 0.89,
+  "visitor_gap_pp": 12.39,
+  "new": {
+    "carted": 8853,
+    "checkout": 2634,
+    "purchased": 1780,
+    "cart_to_checkout": 29.752626228397155
+  },
+  "returning": {
+    "carted": 6335,
+    "checkout": 2670,
+    "purchased": 3065,
+    "cart_to_checkout": 42.14680347277032
+  },
+  "orders": 5242,
+  "total_revenue": 362165,
+  "aov": 69.09,
+  "recoverable_median": 54202,
+  "recoverable_p10": 14063,
+  "recoverable_p90": 181345,
+  "n_simulations": 25000
+}
